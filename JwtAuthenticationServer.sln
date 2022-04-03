@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{89BA488A-A4CC-4E34-B636-7EC7DE5B5E1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtAuthenticationServer", "src\JwtAuthenticationServer\JwtAuthenticationServer.csproj", "{15973B23-88CF-4F7B-9384-8033520C7021}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{56885EE8-63FA-4BE0-B188-D955261EFA87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtAuthenticationServer.Tests", "tests\JwtAuthenticationServer.Tests\JwtAuthenticationServer.Tests.csproj", "{B55DEB61-8032-4587-B7FA-891F4097C0CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15973B23-88CF-4F7B-9384-8033520C7021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15973B23-88CF-4F7B-9384-8033520C7021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15973B23-88CF-4F7B-9384-8033520C7021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15973B23-88CF-4F7B-9384-8033520C7021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55DEB61-8032-4587-B7FA-891F4097C0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55DEB61-8032-4587-B7FA-891F4097C0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55DEB61-8032-4587-B7FA-891F4097C0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55DEB61-8032-4587-B7FA-891F4097C0CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{15973B23-88CF-4F7B-9384-8033520C7021} = {89BA488A-A4CC-4E34-B636-7EC7DE5B5E1A}
+		{B55DEB61-8032-4587-B7FA-891F4097C0CA} = {56885EE8-63FA-4BE0-B188-D955261EFA87}
+	EndGlobalSection
+EndGlobal
