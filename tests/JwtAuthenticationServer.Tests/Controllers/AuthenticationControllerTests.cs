@@ -19,7 +19,13 @@ public class AuthenticationControllerTests
         var logger = Substitute.For<ILogger<AuthenticationController>>();
         var authenticationManager = Substitute.For<IAuthenticationManagerService>();
 
-        var expected = new AuthenticationTokens() { AcessToken = new string('1', 75), RefreshToken = new string('2', 33) };
+        var expected = new AuthenticationTokens() 
+        { 
+            AcessToken = new string('1', 75), 
+            RefreshToken = new string('2', 33),
+            ExpiresIn = System.DateTime.Now.AddHours(1)
+        };
+        
         var sut = new AuthenticationController(logger, authenticationManager);
 
         authenticationManager.AuthenticateAsync(default).ReturnsForAnyArgs(expected);
@@ -27,6 +33,7 @@ public class AuthenticationControllerTests
         dynamic result = await sut.Login(new User() { Name = "test user 1", Password = "test password 1"}) as OkObjectResult;
 
         result.Value.access_token.Should().Be(expected.AcessToken);
-        result.Value.refresh_token.Should().Be(expected.RefreshToken);        
+        result.Value.refresh_token.Should().Be(expected.RefreshToken);
+        result.Value.expires_in.Should().Be(expected.ExpiresIn);      
     }
 }

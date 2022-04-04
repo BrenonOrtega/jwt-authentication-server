@@ -22,6 +22,6 @@ public class AuthenticationController : ControllerBase
     {
         var tokens = await _authenticationManager.AuthenticateAsync(user);
 
-        return Ok(tokens);
+        return Ok(new { access_token = tokens.AcessToken, refresh_token = tokens.RefreshToken, expires_in = tokens.ExpiresIn});
     }
 }
