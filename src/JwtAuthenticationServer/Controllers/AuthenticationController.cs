@@ -10,11 +10,11 @@ namespace JwtAuthenticationServer.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationManagerService _authenticationManager;
-    public ILogger<AuthenticationController> Logger { get; }
+    private readonly ILogger<AuthenticationController> _logger;
 
     public AuthenticationController(ILogger<AuthenticationController> logger, IAuthenticationManagerService authenticationManager)
     {
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _authenticationManager = authenticationManager ?? throw new ArgumentNullException(nameof(authenticationManager));
     }
 
@@ -24,9 +24,14 @@ public class AuthenticationController : ControllerBase
         var tokensResult = await _authenticationManager.AuthenticateAsync(user);
 
         if(tokensResult.IsFailed)
+        {
+            _logger.LogWarning("Failed authenticating user {username}. Error: {error}, Message: {message}",
+                user.Name, tokensResult.Error.Code, tokensResult.Error.Message);
             return Forbid();
+        }
 
         var tokens = tokensResult.Value;
+        _logger.LogInformation("Succesfully Acquired token for user {username}", user.Name);
         return Ok(AuthTokensResponse.FromAuthorizationTokens(tokens));
     }
 }
