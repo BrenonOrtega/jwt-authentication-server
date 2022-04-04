@@ -1,0 +1,4 @@
+{
+    "dotnet-test-explorer.addProblems": true,
+    "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj"
+}
