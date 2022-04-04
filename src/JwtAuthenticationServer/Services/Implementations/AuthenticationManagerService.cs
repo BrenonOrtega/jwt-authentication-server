@@ -1,8 +1,9 @@
+using Awarean.Sdk.Result;
 using JwtAuthenticationServer.Models;
 
 namespace JwtAuthenticationServer.Services;
 
-public class AuthenticationManagerService : IAuthenticationManagerService
+class AuthenticationManagerService : IAuthenticationManagerService
 {
     private readonly IUserRepository _userRepo;
     private readonly ITokenService _tokenService;
@@ -14,8 +15,8 @@ public class AuthenticationManagerService : IAuthenticationManagerService
     }
 
 
-    public Task<AuthenticationTokens> AuthenticateAsync(User user)
+    public Task<Result<AuthenticationTokens>> AuthenticateAsync(User user)
     {
-        return Task.FromResult<AuthenticationTokens>(null);
+        return Task.FromResult(Result<AuthenticationTokens>.Success(null));
     }
 }

@@ -1,6 +1,9 @@
+using Awarean.Sdk.Result;
 using Bogus;
+using FluentAssertions;
 using JwtAuthenticationServer.Controllers;
 using JwtAuthenticationServer.Models;
+using JwtAuthenticationServer.Models.Responses;
 using JwtAuthenticationServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,29 +14,42 @@ namespace JwtAuthenticationServer.Tests.Controllers;
 
 public class AuthenticationControllerTests
 {
+    private readonly ILogger<AuthenticationController> _logger;
+    private readonly IAuthenticationManagerService _authenticationManager;
+
+    public AuthenticationControllerTests() =>
+        (_logger, _authenticationManager) = (Substitute.For<ILogger<AuthenticationController>>(), Substitute.For<IAuthenticationManagerService>());
 
     [Fact]
-    public async void Valid_User_Login_Should_Return_Token()
+    public async void Valid_User_Login_Should_Generate_Token()
     {
-        var faker = new Faker();
-        var logger = Substitute.For<ILogger<AuthenticationController>>();
-        var authenticationManager = Substitute.For<IAuthenticationManagerService>();
+        var expected = new AuthenticationTokens(new string('1', 75), 
+            new string('2', 33), 
+            TimeSpan.FromHours(3).Seconds, 
+            new List<string>(5) { "create", "read", "delete", "update" });
 
-        var expected = new AuthenticationTokens() 
-        { 
-            AcessToken = new string('1', 75), 
-            RefreshToken = new string('2', 33),
-            ExpiresIn = System.DateTime.Now.AddHours(1)
-        };
-        
-        var sut = new AuthenticationController(logger, authenticationManager);
+        var sut = new AuthenticationController(_logger, _authenticationManager);
 
-        authenticationManager.AuthenticateAsync(default).ReturnsForAnyArgs(expected);
+        _authenticationManager.AuthenticateAsync(default).ReturnsForAnyArgs(Result<AuthenticationTokens>.Success(expected));
 
-        dynamic result = await sut.Login(new User() { Name = "test user 1", Password = "test password 1"}) as OkObjectResult;
+        var actionResult = await sut.Login(new User() { Name = "test user 1", Password = "test password 1" }) as OkObjectResult;
+        var tokenResult = actionResult.Value as AuthTokensResponse;
+        var tokens = tokenResult;
 
-        result.Value.access_token.Should().Be(expected.AcessToken);
-        result.Value.refresh_token.Should().Be(expected.RefreshToken);
-        result.Value.expires_in.Should().Be(expected.ExpiresIn);      
+        tokens.access_token.Should().Be(expected.AcessToken);
+        tokens.refresh_token.Should().Be(expected.RefreshToken);
+        tokens.expires_in.Should().Be(expected.ExpiresIn);
+        tokens.scopes.Should().ContainAll(expected.Scopes);
+    }
+
+    [Fact]
+    public async void Invalid_User_Should_Forbid_Access()
+    {
+        _authenticationManager.AuthenticateAsync(default).ReturnsForAnyArgs(Result<AuthenticationTokens>.Fail("INVALID_USER", "this user does not exist"));
+        var sut = new AuthenticationController(_logger, _authenticationManager);
+
+        var result = await sut.Login(new User { Name = "any invalid name", Password = "any invalid password" });
+
+        result.Should().BeOfType<ForbidResult>();
     }
 }

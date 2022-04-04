@@ -1,4 +1,5 @@
 using JwtAuthenticationServer.Models;
+using JwtAuthenticationServer.Models.Responses;
 using JwtAuthenticationServer.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,8 +21,12 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login(User user)
     {
-        var tokens = await _authenticationManager.AuthenticateAsync(user);
+        var tokensResult = await _authenticationManager.AuthenticateAsync(user);
 
-        return Ok(new { access_token = tokens.AcessToken, refresh_token = tokens.RefreshToken, expires_in = tokens.ExpiresIn});
+        if(tokensResult.IsFailed)
+            return Forbid();
+
+        var tokens = tokensResult.Value;
+        return Ok(AuthTokensResponse.FromAuthorizationTokens(tokens));
     }
 }
