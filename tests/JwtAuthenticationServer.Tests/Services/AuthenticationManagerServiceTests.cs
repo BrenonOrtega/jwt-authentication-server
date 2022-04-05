@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using JwtAuthenticationServer.Models;
 using FluentAssertions;
+using Awarean.Sdk.Result;
 
 namespace JwtAuthenticationServer.Tests.Services;
 public class AuthenticationManagerServiceTests
@@ -31,11 +32,21 @@ public class AuthenticationManagerServiceTests
     [Fact]
     public async void Existing_User_Should_Authenticate()
     {
-        _userRepo.GetUserAsync(default, default)
-            .ReturnsForAnyArgs(new UserData { Active = true, Id = Guid.NewGuid(), User = new User { Name = "Test User", Password = "Test Password" } });
+        //Arrange
+        var expected = new AuthenticationTokens(new string('1', 240), new string('1', 90), 2400, new string[10]);
 
-        _tokenService.GenerateTokenAsync(default).ReturnsForAnyArgs(new AuthenticationTokens(new string('1', 240), new string('1', 90), 2400, new string[10]));
+        _userRepo.TryGetAsync(default)
+            .ReturnsForAnyArgs(Result<UserData>.Success(new UserData {Id = Guid.NewGuid(), User = new User(), Active = true }));
+        _tokenService.Generate(default).ReturnsForAnyArgs(expected);
 
+        var sut = new AuthenticationManagerService(_logger, _userRepo, _tokenService);
+        
+        //Act
+        var tokensResult = await sut.AuthenticateAsync(new User());
+
+        //Assert
+        var actual = tokensResult.Value;
+        tokensResult.IsSuccess.Should().BeTrue();
+        actual.Should().BeEquivalentTo(expected);
     }
-
 }

@@ -1,5 +1,4 @@
-using JwtAuthenticationServer.Models;
-using Microsoft.Extensions.DependencyInjection;
+using JwtAuthenticationServer.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
-services.Configure<AuthOptions>(configuration.GetSection(nameof(AuthOptions)));
+services.AddDefaultTokenAuthentication(configuration);
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
