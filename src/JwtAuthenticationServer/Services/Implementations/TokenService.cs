@@ -15,7 +15,18 @@ class TokenService : ITokenService
         _authOptions = authOptions?.CurrentValue ?? throw new ArgumentNullException(nameof(authOptions));
     }
 
-    public Task<string> GenerateTokenAsync(UserData user)
+    public AuthenticationTokens Generate(UserData user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string GenerateRefreshToken(UserData user)
+    {
+        var @bytes = new byte[64];
+        return "";
+    }
+
+    public string GenerateToken(UserData user)
     {
         using var encryption = RSA.Create();
 
@@ -30,11 +41,10 @@ class TokenService : ITokenService
             notBefore: DateTime.Now,
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: signingCredentials
-            
         );
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-        return Task.FromResult(token);
+        return token;
     }
 }

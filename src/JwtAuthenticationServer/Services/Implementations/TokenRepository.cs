@@ -1,7 +1,8 @@
 using JwtAuthenticationServer.Models;
 
 namespace JwtAuthenticationServer.Services;
-public class TokenRepository : ITokenRepository
+
+class TokenRepository : ITokenRepository
 {
     private readonly IUserRepository userRepo;
 

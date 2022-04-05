@@ -3,5 +3,7 @@ using JwtAuthenticationServer.Models;
 namespace JwtAuthenticationServer.Services;
 public interface ITokenService
 {
-    Task<string> GenerateTokenAsync(UserData user);
+    string GenerateToken(UserData user);
+    string GenerateRefreshToken(UserData user);
+    AuthenticationTokens Generate(UserData user);
 }

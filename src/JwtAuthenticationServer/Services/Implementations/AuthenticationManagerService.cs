@@ -19,11 +19,13 @@ class AuthenticationManagerService : IAuthenticationManagerService
 
     public async Task<Result<AuthenticationTokens>> AuthenticateAsync(User user)
     {
-        var exists = await _userRepo.ExistsAsync(user);
+        var result = await _userRepo.TryGetAsync(user);
 
-        if(exists is false)
+        if(result.IsFailed)
             return Result<AuthenticationTokens>.Fail(KnownErrors.USER_DOES_NOT_EXIST);
 
-        return Result<AuthenticationTokens>.Success(null);
+        var tokens = _tokenService.Generate(result.Value);
+
+        return Result<AuthenticationTokens>.Success(tokens);
     }
 }
