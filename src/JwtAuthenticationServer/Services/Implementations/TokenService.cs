@@ -30,6 +30,7 @@ class TokenService : ITokenService
             notBefore: DateTime.Now,
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: signingCredentials
+            
         );
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);

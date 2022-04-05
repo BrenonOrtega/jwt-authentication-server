@@ -12,7 +12,7 @@ namespace JwtAuthenticationServer.Models
             AcessToken = acessToken;
             RefreshToken = refreshToken;
             ExpiresIn = expiresIn;
-            Scopes ??= new List<string>();
+            Scopes = scopes ?? new List<string>();
         }
 
         public static readonly AuthenticationTokens Null = new AuthenticationTokens(string.Empty, string.Empty, -1);
