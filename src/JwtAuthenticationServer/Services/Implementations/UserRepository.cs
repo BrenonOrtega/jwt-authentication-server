@@ -1,3 +1,4 @@
+using Awarean.Sdk.Result;
 using JwtAuthenticationServer.Models;
 
 namespace JwtAuthenticationServer.Services;
@@ -46,5 +47,15 @@ class UserRepository : IUserRepository
     public Task<UserData> GetUserAsync(string name, string password)
     {
         return Task.FromResult(_users.SingleOrDefault(EvaluateUser(name, password)).Value);
+    }
+
+    public async Task<Result<UserData>> TryGetAsync(User user)
+    {
+        var found = _users.FirstOrDefault(EvaluateUser(user.Name, user.Password)).Value;
+
+        if(found is null)
+            return Result<UserData>.Fail("NOT_FOUND", "Did not found user matching supplied informations");
+        
+        return Result<UserData>.Success(found);
     }
 }
