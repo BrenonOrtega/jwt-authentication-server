@@ -46,6 +46,7 @@ class UserRepository : IUserRepository
 
     public Task<UserData> GetUserAsync(string name, string password)
     {
+        string.IsNullOrEmpty()
         return Task.FromResult(_users.SingleOrDefault(EvaluateUser(name, password)).Value);
     }
 

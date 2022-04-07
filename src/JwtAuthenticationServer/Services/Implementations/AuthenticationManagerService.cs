@@ -16,7 +16,6 @@ class AuthenticationManagerService : IAuthenticationManagerService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-
     public async Task<Result<AuthenticationTokens>> AuthenticateAsync(User user)
     {
         var result = await _userRepo.TryGetAsync(user);
@@ -25,7 +24,6 @@ class AuthenticationManagerService : IAuthenticationManagerService
             return Result<AuthenticationTokens>.Fail(KnownErrors.USER_DOES_NOT_EXIST);
 
         var tokens = _tokenService.Generate(result.Value);
-
         return Result<AuthenticationTokens>.Success(tokens);
     }
 }

@@ -32,21 +32,23 @@ public class AuthenticationManagerServiceTests
     [Fact]
     public async void Existing_User_Should_Authenticate()
     {
-        //Arrange
+        var userData = new UserData 
+        {   Id = Guid.NewGuid(), 
+            Active = true, 
+            Claims = new Dictionary<string, string>{ {"role", "admin, user"}, {"scope", "create, read, delete"}}, 
+            User = new User {Name = "Test User", Password = ""}
+        };
+
         var expected = new AuthenticationTokens(new string('1', 240), new string('1', 90), 2400, new string[10]);
 
-        _userRepo.TryGetAsync(default)
-            .ReturnsForAnyArgs(Result<UserData>.Success(new UserData {Id = Guid.NewGuid(), User = new User(), Active = true }));
-        _tokenService.Generate(default).ReturnsForAnyArgs(expected);
+        _userRepo.ExistsAsync(default).ReturnsForAnyArgs(true);
+        _tokenService.GenerateAsync(default).ReturnsForAnyArgs(expected);
 
         var sut = new AuthenticationManagerService(_logger, _userRepo, _tokenService);
-        
-        //Act
-        var tokensResult = await sut.AuthenticateAsync(new User());
 
-        //Assert
-        var actual = tokensResult.Value;
-        tokensResult.IsSuccess.Should().BeTrue();
-        actual.Should().BeEquivalentTo(expected);
+        var result = await sut.AuthenticateAsync(userData.User);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(expected);
     }
 }

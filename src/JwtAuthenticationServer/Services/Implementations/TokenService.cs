@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Awarean.Sdk.Result;
 using JwtAuthenticationServer.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -15,18 +16,23 @@ class TokenService : ITokenService
         _authOptions = authOptions?.CurrentValue ?? throw new ArgumentNullException(nameof(authOptions));
     }
 
-    public AuthenticationTokens Generate(UserData user)
+    public Task<AuthenticationTokens> GenerateAsync(UserData user)
     {
         throw new NotImplementedException();
     }
 
-    public string GenerateRefreshToken(UserData user)
+    public Task<string> GenerateRefreshToken(UserData user)
     {
         var @bytes = new byte[64];
-        return "";
+        return Task.FromResult("");
     }
 
-    public string GenerateToken(UserData user)
+    public Task<string> GenerateRefreshTokenAsync(UserData user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> GenerateTokenAsync(UserData user)
     {
         using var encryption = RSA.Create();
 
@@ -45,6 +51,11 @@ class TokenService : ITokenService
 
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-        return token;
+        return Task.FromResult(token);
+    }
+
+    public Task<Result> ValidateAsync(string token)
+    {
+        throw new NotImplementedException();
     }
 }
