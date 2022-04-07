@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
-using System.Text;
 using FluentAssertions;
 using JwtAuthenticationServer.Models;
 using JwtAuthenticationServer.Services;
@@ -20,14 +19,14 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void Should_Generate_Token_Succesfully()
+    public async void Should_Generate_Token_Succesfully()
     {
         // Given
         var user = ValidUser();
         var sut = new TokenService(_options);
 
         // When
-        var token = sut.GenerateToken(user);
+        var token= await sut.GenerateTokenAsync(user);
 
         // Then
         var handler = new JwtSecurityTokenHandler();

@@ -13,13 +13,14 @@ public class AuthenticationManagerServiceTests
     private readonly IUserRepository _userRepo;
     private readonly ITokenService _tokenService;
 
-    public AuthenticationManagerServiceTests() => (_logger, _userRepo, _tokenService) =
+    public AuthenticationManagerServiceTests() => 
+        (_logger, _userRepo, _tokenService) = 
             (Substitute.For<ILogger<IAuthenticationManagerService>>(), Substitute.For<IUserRepository>(), Substitute.For<ITokenService>());
 
     [Fact]
     public async void Non_Existing_User_Should_Not_Authenticate()
     {
-        _userRepo.GetUserAsync(default, default).ReturnsForAnyArgs<UserData>(null, new UserData[] { null });
+        _userRepo.TryGetAsync(default).ReturnsForAnyArgs(Result<UserData>.Fail("s", "s"));
 
         var sut = new AuthenticationManagerService(_logger, _userRepo, _tokenService);
 
@@ -41,7 +42,7 @@ public class AuthenticationManagerServiceTests
 
         var expected = new AuthenticationTokens(new string('1', 240), new string('1', 90), 2400, new string[10]);
 
-        _userRepo.ExistsAsync(default).ReturnsForAnyArgs(true);
+        _userRepo.TryGetAsync(default).ReturnsForAnyArgs(Result<UserData>.Success(userData));
         _tokenService.GenerateAsync(default).ReturnsForAnyArgs(expected);
 
         var sut = new AuthenticationManagerService(_logger, _userRepo, _tokenService);

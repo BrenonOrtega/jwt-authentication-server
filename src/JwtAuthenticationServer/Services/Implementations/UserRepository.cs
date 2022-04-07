@@ -1,4 +1,5 @@
 using Awarean.Sdk.Result;
+using Awarean.Sdk.Utils;
 using JwtAuthenticationServer.Models;
 
 namespace JwtAuthenticationServer.Services;
@@ -6,6 +7,8 @@ namespace JwtAuthenticationServer.Services;
 class UserRepository : IUserRepository
 {
     IDictionary<Guid, UserData> _users = new Dictionary<Guid, UserData>(Generate(5));
+
+    public static readonly Error UserNotFound = Error.Create("DID_NOT_FOUND_USER", "Could not find user that matches supplied user.");
 
     private static IEnumerable<KeyValuePair<Guid, UserData>> Generate(int count)
     {
@@ -27,9 +30,13 @@ class UserRepository : IUserRepository
         return Task.CompletedTask;
     }
 
-    public Task<bool> ExistsAsync(User user)
+    public Task<Result<bool>> ExistsAsync(User user)
     {
-        return Task.FromResult(_users.Any(EvaluateUser(user.Name, user.Password)));
+        var result = _users.Any(EvaluateUser(user.Name, user.Password)) 
+            ?   Result<bool>.Success(true)
+            :   Result<bool>.Fail(UserNotFound);
+        
+        return Task.FromResult(result);
     }
 
     private static Func<KeyValuePair<Guid, UserData>, bool> EvaluateUser(string name, string password)
@@ -37,17 +44,22 @@ class UserRepository : IUserRepository
         return x => x.Value.User.Name == name && x.Value.User.Password == password;
     }
 
-    public Task<UserData> GetByIdAsync(Guid id)
+    public Task<Result<UserData>> GetByIdAsync(Guid id)
     {
-        _users.TryGetValue(id, out var user);
+        var exists = _users.TryGetValue(id, out var user);
 
-        return Task.FromResult(user);
+        return Task.FromResult(exists ? Result<UserData>.Success(user) : HandleNotFoundUser<UserData>());
     }
 
-    public Task<UserData> GetUserAsync(string name, string password)
+
+    public Task<Result<UserData>> GetUserAsync(string name, string password)
     {
-        string.IsNullOrEmpty()
-        return Task.FromResult(_users.SingleOrDefault(EvaluateUser(name, password)).Value);
+        if(name.IsNullOrEmpty() || password.IsNullOrEmpty())
+            return Task.FromResult(Result<UserData>.Fail("INVALID_PARAMETERS", "Invalid username or password"));
+        
+        var userData = _users.SingleOrDefault(EvaluateUser(name, password)).Value;
+
+        return Task.FromResult(Result<UserData>.Success(userData));
     }
 
     public async Task<Result<UserData>> TryGetAsync(User user)
@@ -59,4 +71,6 @@ class UserRepository : IUserRepository
         
         return Result<UserData>.Success(found);
     }
+
+    private Result<T> HandleNotFoundUser<T>() => Result<T>.Fail(UserNotFound);
 }

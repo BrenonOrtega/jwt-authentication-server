@@ -8,6 +8,8 @@ namespace JwtAuthenticationServer.Models
 
         public IDictionary<string, string> Claims { get; init; } = new Dictionary<string, string>();
 
+        public UserData() {  }
+
         public UserData(Guid id, User user, IEnumerable<KeyValuePair<string, string>> claims)
         {
             Id = id;
@@ -18,9 +20,11 @@ namespace JwtAuthenticationServer.Models
                 Claims.Add(claim);
         }
 
-        public UserData()
+        public readonly static UserData Null = new UserData() 
         {
-            
-        }
+            Id = Guid.Empty,
+            Active = false,
+            User = User.Null
+        };
     }
 }

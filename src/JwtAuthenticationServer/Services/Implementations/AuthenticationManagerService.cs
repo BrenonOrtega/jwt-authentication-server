@@ -23,7 +23,7 @@ class AuthenticationManagerService : IAuthenticationManagerService
         if(result.IsFailed)
             return Result<AuthenticationTokens>.Fail(KnownErrors.USER_DOES_NOT_EXIST);
 
-        var tokens = _tokenService.Generate(result.Value);
+        var tokens = await _tokenService.GenerateAsync(result.Value);
         return Result<AuthenticationTokens>.Success(tokens);
     }
 }
