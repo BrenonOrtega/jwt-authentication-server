@@ -19,6 +19,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost]
+    [Route("{Action}")]
     public async Task<IActionResult> Login(User user)
     {
         var tokensResult = await _authenticationManager.AuthenticateAsync(user);
@@ -32,6 +33,7 @@ public class AuthenticationController : ControllerBase
 
         var tokens = tokensResult.Value;
         _logger.LogInformation("Succesfully Acquired token for user {username}", user.Name);
+        
         return Ok(AuthTokensResponse.FromAuthorizationTokens(tokens));
     }
 }

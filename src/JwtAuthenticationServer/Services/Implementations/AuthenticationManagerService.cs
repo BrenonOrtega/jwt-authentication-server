@@ -24,6 +24,12 @@ class AuthenticationManagerService : IAuthenticationManagerService
             return Result<AuthenticationTokens>.Fail(KnownErrors.USER_DOES_NOT_EXIST);
 
         var tokens = await _tokenService.GenerateAsync(result.Value);
+
         return Result<AuthenticationTokens>.Success(tokens);
+    }
+
+    public Task<Result> ValidateTokenAsync(string token)
+    {
+        return _tokenService.ValidateAsync(token);
     }
 }

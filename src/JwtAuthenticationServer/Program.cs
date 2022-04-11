@@ -1,3 +1,4 @@
+using JwtAuthenticationServer.Attributes;
 using JwtAuthenticationServer.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+app.UseMiddleware<AuthorizeMiddleware>();
 
 app.UseAuthorization();
 

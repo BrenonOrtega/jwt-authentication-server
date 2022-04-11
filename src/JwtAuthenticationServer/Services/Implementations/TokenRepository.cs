@@ -1,9 +1,12 @@
+using System.Text.Json;
 using JwtAuthenticationServer.Models;
 
 namespace JwtAuthenticationServer.Services;
 
 class TokenRepository : ITokenRepository
 {
+    const string FILE_PATH = @"..\tokens.json";
+    
     private readonly IUserRepository userRepo;
 
     public TokenRepository(IUserRepository userRepo)
@@ -36,8 +39,22 @@ class TokenRepository : ITokenRepository
         throw new NotImplementedException();
     }
 
-    public Task SaveToken(AuthenticationTokens tokens)
+    public async Task SaveToken(AuthenticationTokens tokens)
     {
-        throw new NotImplementedException();
+        var exists = File.Exists(FILE_PATH);
+
+        if(exists is false)
+        {
+            using var stream = File.Create(FILE_PATH);
+            JsonSerializer.Serialize(stream, new object[0]);
+        }
+
+        var file = await File.ReadAllTextAsync(FILE_PATH);
+
+        var allTokens = JsonSerializer.Deserialize<List<AuthenticationTokens>>(file);
+
+        allTokens.Add(tokens);
+
+        File.WriteAllText(FILE_PATH, JsonSerializer.Serialize(allTokens));
     }
 }

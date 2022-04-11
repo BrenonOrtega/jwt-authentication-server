@@ -1,3 +1,4 @@
+using JwtAuthenticationServer.Attributes;
 using JwtAuthenticationServer.Models;
 using JwtAuthenticationServer.Services;
 
@@ -9,7 +10,8 @@ public static class ServiceExtensions
         services.AddAuthenticationManagement()
             .AddUserRepository()
             .AddTokenRepository()
-            .AddTokenGeneration(configuration);
+            .AddTokenGeneration(configuration)
+            .AddAuthorizeMiddleware();
 
         return services;
     }
@@ -27,6 +29,12 @@ public static class ServiceExtensions
         return services;
     }
 
+    public static IServiceCollection AddAuthorizeMiddleware(this IServiceCollection services)
+    {
+         services.AddScoped<AuthorizeMiddleware>();
+         return services;
+    }
+
     public static IServiceCollection AddTokenRepository(this IServiceCollection services)
     {
         services.AddScoped<ITokenRepository, TokenRepository>();
@@ -38,5 +46,4 @@ public static class ServiceExtensions
         services.AddScoped<IAuthenticationManagerService, AuthenticationManagerService>();
         return services;
     }
-
 }

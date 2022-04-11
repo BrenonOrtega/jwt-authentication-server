@@ -11,25 +11,30 @@ namespace JwtAuthenticationServer.Services;
 class TokenService : ITokenService
 {
     private readonly AuthOptions _authOptions;
-    public TokenService(IOptionsMonitor<AuthOptions> authOptions)
+    private readonly ITokenRepository _tokenRepo;
+
+    public TokenService(IOptionsMonitor<AuthOptions> authOptions, ITokenRepository tokenRepo)
     {
         _authOptions = authOptions?.CurrentValue ?? throw new ArgumentNullException(nameof(authOptions));
+        _tokenRepo = tokenRepo ?? throw new ArgumentNullException(nameof(tokenRepo));
     }
 
-    public Task<AuthenticationTokens> GenerateAsync(UserData user)
+    public async Task<AuthenticationTokens> GenerateAsync(UserData user)
     {
-        throw new NotImplementedException();
-    }
+        var token = await GenerateTokenAsync(user);
+        var refreshToken = await GenerateRefreshTokenAsync(user);
 
-    public Task<string> GenerateRefreshToken(UserData user)
-    {
-        var @bytes = new byte[64];
-        return Task.FromResult("");
+        var authToken = new AuthenticationTokens(token, refreshToken, 1200, new[] { "admin" });
+
+        await _tokenRepo.SaveToken(authToken);
+
+        return authToken;
     }
 
     public Task<string> GenerateRefreshTokenAsync(UserData user)
     {
-        throw new NotImplementedException();
+        var @bytes = new byte[64];
+        return Task.FromResult("");
     }
 
     public Task<string> GenerateTokenAsync(UserData user)

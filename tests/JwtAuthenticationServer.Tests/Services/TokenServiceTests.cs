@@ -12,10 +12,13 @@ namespace JwtAuthenticationServer.Tests.Services;
 public class TokenServiceTests
 {
     private readonly IOptionsMonitor<AuthOptions> _options;
+    private readonly ITokenRepository _tokenRepo;
+   
     public TokenServiceTests()
     {
         _options = Substitute.For<IOptionsMonitor<AuthOptions>>();
         _options.CurrentValue.ReturnsForAnyArgs(Options);
+        _tokenRepo = Substitute.For<ITokenRepository>();
     }
 
     [Fact]
@@ -23,7 +26,7 @@ public class TokenServiceTests
     {
         // Given
         var user = ValidUser();
-        var sut = new TokenService(_options);
+        var sut = new TokenService(_options, _tokenRepo);
 
         // When
         var token= await sut.GenerateTokenAsync(user);
@@ -42,10 +45,8 @@ public class TokenServiceTests
         Claims = new Dictionary<string, string> { { "role", "admin" }, { "scopes", "create, read, update, delete" } }
     };
 
-
     public AuthOptions Options 
-    {   get 
-        {
+    {   get {
             using RSA rsa = RSA.Create();
 
             var privateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
